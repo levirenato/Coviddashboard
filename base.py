@@ -43,7 +43,7 @@ app.layout = html.Div([
             dbc.Card([
                 dbc.CardBody([
                     html.H4("Casos Recuperados",className="card-title"),
-                    html.P(df["Recuperados"].sum(),id="casos-recuperados",className="card-text")
+                    html.P(df["Recuperados"].sum(),id="casos-recuperados",className="card-text",style={"color":"#4bbf73"})
                 ])
             ],outline=True,style={"margin":"10px","text-align":"center"})
         ], md=4),
@@ -52,7 +52,7 @@ app.layout = html.Div([
             dbc.Card([
                 dbc.CardBody([
                     html.H4("Casos Confirmados",className="card-title"),
-                    html.P( df["Confirmados"].sum(),id="casos-confirmados",className="card-text")
+                    html.P( df["Confirmados"].sum(),id="casos-confirmados",className="card-text",style={"color":"#d9534f"})
                 ])
             ],outline=True,style={"margin":"10px","text-align":"center"})
         ], md=4),
@@ -61,7 +61,7 @@ app.layout = html.Div([
             dbc.Card([
                 dbc.CardBody([
                     html.H4("Casos de Óbito",className="card-title"),
-                    html.P( df["Obitos"].sum(),id="obitos",className="card-text")
+                    html.P( df["Obitos"].sum(),id="obitos",className="card-text",style={"color":"#d9534f"})
                 ])
             ],outline=True,style={"margin":"10px","text-align":"center"})
         ], md=4)
