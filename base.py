@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 from urllib.request import urlopen
-import json
+import dash
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import dash_bootstrap_components as dbc
@@ -14,56 +14,56 @@ if response.status_code == 200:
     geojson = response.json()
 
 #Base De Dados (Com resumo por municipio)
-df = pd.read_csv('RESUMO.CSV',sep=';')
+df = pd.read_csv('RESUMO.CSV',sep=';',index_col=False)
 
 # Div Dashboard
-app = Dash(__name__,external_stylesheets=[dbc.themes.LUX])
+app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX])
 
 app.layout = html.Div([
     #Head
     dbc.NavbarSimple([
-    
     dbc.RadioItems(
-        className="btn-group",
-        inputClassName="btn-check",
-        labelClassName="btn btn-outline-primary",
-        labelCheckedClassName="active",
         id='offcanvas-placement-selector',
         options = [
                 {"label": "Morbidade", "value": "Morbidade"},
                 {"label": "Confirmados", "value": "Confirmados"},
                 {"label": "Recuperados", "value":"Recuperados"},
                 {"label": "Obitos", "value":"Obitos"}], value="Morbidade",
-        )
-    ],brand='Estatisticas de Covid'),
-    
+        style={"display":"flex","align-self":"center"}
+        ),
+    dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%"},className="btn btn-dark")
+    ],brand='Estatisticas de Covid'),   
+   
     # Cards
     dbc.Row([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
+                    html.H6("Pernambuco",id="loca",className="card-header"),
                     html.H4("Casos Recuperados",className="card-title"),
                     html.P(df["Recuperados"].sum(),id="casos-recuperados",className="card-text",style={"color":"#4bbf73"})
                 ])
-            ],outline=True,style={"margin":"10px","text-align":"center"})
+            ],outline=True,style={"margin":"10px","text-align":"center"}, className="card text-white bg-dark mb-3")
         ], md=4),
         
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
+                    html.H6("Pernambuco",id="loca2",className="card-header"),
                     html.H4("Casos Confirmados",className="card-title"),
                     html.P( df["Confirmados"].sum(),id="casos-confirmados",className="card-text",style={"color":"#d9534f"})
                 ])
-            ],outline=True,style={"margin":"10px","text-align":"center"})
+            ],outline=True,style={"margin":"10px","text-align":"center"}, className="card text-white bg-dark mb-3")
         ], md=4),
         
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
+                    html.H6("Pernambuco",id="loca3",className="card-header"),
                     html.H4("Casos de Óbito",className="card-title"),
                     html.P( df["Obitos"].sum(),id="obitos",className="card-text",style={"color":"#d9534f"})
                 ])
-            ],outline=True,style={"margin":"10px","text-align":"center"})
+            ],outline=True,style={"margin":"10px","text-align":"center"}, className="card text-white bg-dark mb-3")
         ], md=4)
         
     ]),
@@ -71,7 +71,7 @@ app.layout = html.Div([
    #Graficos
     html.Div([ 
         dcc.Graph(id="graph",style={"margin-top":"2%"}),
-        dcc.Graph(id="top",style={"margin-top":"2%"})
+        dcc.Graph(id="top",style={"margin-top":"2%"}, config={ 'responsive': True})
     ])
     
 ], style={"padding-right":"3%","padding-left":"3%"})
@@ -116,11 +116,40 @@ def top_gra(categoria):
                      y=top10['{}'.format(categoria)],
                      color=top10['Municipio'], title='6 Cidades com maior {}'.format(categoria))
     fig.update_layout(
-    margin=dict(l=10, r=10, t=30, b=10)
+    margin=dict(l=10, r=10, t=30, b=10),autosize=True
 )
     return fig
 
 #Click
+@app.callback(
+    Output("loca", "children"),
+    Output("loca2", "children"),
+    Output("loca3", "children"),
+    Output("casos-recuperados", "children"),
+    Output("casos-confirmados", "children"),
+    Output("obitos", "children"),
+    [Input("graph", "clickData"), Input("location-button", "n_clicks")]
+)
+def update_location(click_data, n_clicks):
+    df.reset_index
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if click_data is not None and changed_id != "location-button.n_clicks":
+        state = click_data["points"][0]["location"]
+        casos_recuperados = "{}".format(df.query("codarea == {}".format(state))['Recuperados'].sum())   
+        casos_confirmados = "{}".format(df.query("codarea == {}".format(state))['Confirmados'].sum())   
+        obitos = "{}".format(df.query("codarea == {}".format(state))['Obitos'].sum())
+        loca = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string()))
+        loca2 = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string()))
+        loca3 = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string()))
+    else:
+        casos_recuperados = "{}".format(df["Recuperados"].sum())
+        casos_confirmados = "{}".format(df["Confirmados"].sum())
+        obitos = "{}".format(df["Obitos"].sum())
+        loca = "Pernambuco"
+        loca2 = "Pernambuco"
+        loca3 = "Pernambuco"
+
+    return (loca,loca2,loca3,casos_recuperados,casos_confirmados,obitos)
 
 
 
@@ -128,4 +157,4 @@ def top_gra(categoria):
       
       
 # Run Aplication
-app.run_server(debug=True)
+app.run_server(debug=True, port=8051)
