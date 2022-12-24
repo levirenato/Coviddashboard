@@ -10,7 +10,7 @@ import dash_bootstrap_components as dbc
 #GeoJson (Fonte IBGE)
 geojson = json.load(open('geoJson.json'))
 #Base De Dados (Com resumo por municipio)
-df = pd.read_csv('RESUMO.CSV',sep=';',index_col=False)
+df = pd.read_csv('RESUMO.csv',sep=';',index_col=False)
 
 # Div Dashboard
 app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX])
