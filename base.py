@@ -164,4 +164,5 @@ def update_location(click_data, n_clicks):
 
 
 # Run Aplication
-app.run_server(debug=True, port=8051)
+if __name__ == '__main__':
+    app.run_server(debug=True)
