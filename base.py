@@ -29,7 +29,7 @@ app.layout = html.Div([
                 {"label": "Confirmados", "value": "Confirmados"},
                 {"label": "Recuperados", "value":"Recuperados"},
                 {"label": "Obitos", "value":"Obitos"}], value="Morbidade",
-        style={"display":"flex","align-self":"center"}
+        style={"align-self":"center"}
         ),
     dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%"},className="btn btn-dark")
     ],brand='Estatisticas de Covid'),   
@@ -39,8 +39,8 @@ app.layout = html.Div([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H6("Pernambuco",id="loca",className="card-header"),
-                    html.H4("Casos Recuperados",className="card-title"),
+                    html.H4("Pernambuco",id="loca",className="card-header"),
+                    html.H6("Casos Recuperados",className="card-title", style={"padding-top":"2%"}),
                     html.P(df["Recuperados"].sum(),id="casos-recuperados",className="card-text",style={"color":"#4bbf73"})
                 ])
             ],outline=True,style={"margin":"10px","text-align":"center"}, className="card text-white bg-dark mb-3")
@@ -49,8 +49,8 @@ app.layout = html.Div([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H6("Pernambuco",id="loca2",className="card-header"),
-                    html.H4("Casos Confirmados",className="card-title"),
+                    html.H4("Pernambuco",id="loca2",className="card-header"),
+                    html.H6("Casos Confirmados",className="card-title", style={"padding-top":"2%"}),
                     html.P( df["Confirmados"].sum(),id="casos-confirmados",className="card-text",style={"color":"#d9534f"})
                 ])
             ],outline=True,style={"margin":"10px","text-align":"center"}, className="card text-white bg-dark mb-3")
@@ -59,14 +59,14 @@ app.layout = html.Div([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H6("Pernambuco",id="loca3",className="card-header"),
-                    html.H4("Casos de Óbito",className="card-title"),
-                    html.P( df["Obitos"].sum(),id="obitos",className="card-text",style={"color":"#d9534f"})
+                    html.H4("Pernambuco",id="loca3",className="card-header"),
+                    html.H6("Casos de Óbito",className="card-title", style={"padding-top":"2%"}),
+                    html.P( df["Obitos"].sum(),id="obitos",className="card-text",style={"color":"#fcfcfc"})
                 ])
             ],outline=True,style={"margin":"10px","text-align":"center"}, className="card text-white bg-dark mb-3")
         ], md=4)
         
-    ]),
+    ],style={"display":"flex"}),
    
    #Graficos
     html.Div([ 
@@ -89,14 +89,14 @@ def display_choropleth(categoria):
     if categoria == 'Morbidade':
         tema = 'sunsetdark'
     elif categoria == 'Obitos':
-        tema = 'dense'
+        tema = "#d6d6d5",'#484848','#020202'
     elif categoria == 'Recuperados':
         tema = 'darkmint'
-    else: tema = 'greys'
+    else: tema = "#fcc2aa","#f14230","#67000d"
     
     fig = px.choropleth_mapbox(df, geojson=geojson, color=categoria,locations="codarea", featureidkey="properties.codarea",color_continuous_scale=tema,
-                            center={"lat":  -8.27519, "lon": -38.0376},mapbox_style="carto-positron", zoom=6.6,title="Mapa Taxa de {}".format(categoria),
-                            hover_data={"Municipio":True,"codarea":False, "Morbidade":True, "Confirmados":True,"Recuperados":True,"Obitos":True})
+                               center={"lat":  -8.27519, "lon": -38.0376},mapbox_style="carto-positron", zoom=6.6,title="Mapa Taxa de {}".format(categoria),
+                                 hover_data={"Municipio":True,"codarea":False, "Morbidade":True, "Confirmados":True,"Recuperados":True,"Obitos":True})
 
 
     fig.update_layout(
@@ -110,14 +110,24 @@ def display_choropleth(categoria):
 Output("top","figure"),
 Input("offcanvas-placement-selector", "value"))
 def top_gra(categoria):  
+     # condição para definir o tema
+    if categoria == 'Morbidade':
+        tema = "#e24c70"
+    elif categoria == 'Obitos':
+        tema = "#020202"
+    elif categoria == 'Recuperados':
+        tema = "#123f5a"
+    else: tema = "#67000d"
+    
     #top 10
     top10 = df.nlargest(n=6, columns=['{}'.format(categoria)])
-    fig = px.bar(df, x=top10['Municipio'],
+    fig = px.bar(df, x=top10['Municipio'],text_auto=True,
                      y=top10['{}'.format(categoria)],
-                     color=top10['Municipio'], title='6 Cidades com maior {}'.format(categoria))
-    fig.update_layout(
-    margin=dict(l=10, r=10, t=30, b=10),autosize=True
-)
+                     title='6 Cidades com maior {}'.format(categoria))
+    
+    fig.update_layout(margin=dict(l=10, r=10, t=30, b=10),autosize=True, plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)",
+                      )
+    fig.update_traces(marker_color=tema)
     return fig
 
 #Click
@@ -138,9 +148,9 @@ def update_location(click_data, n_clicks):
         casos_recuperados = "{}".format(df.query("codarea == {}".format(state))['Recuperados'].sum())   
         casos_confirmados = "{}".format(df.query("codarea == {}".format(state))['Confirmados'].sum())   
         obitos = "{}".format(df.query("codarea == {}".format(state))['Obitos'].sum())
-        loca = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string()))
-        loca2 = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string()))
-        loca3 = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string()))
+        loca = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string(index=False)))
+        loca2 = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string(index=False)))
+        loca3 = "{}".format((df.query("codarea == {}".format(state))['Municipio'].to_string(index=False)))
     else:
         casos_recuperados = "{}".format(df["Recuperados"].sum())
         casos_confirmados = "{}".format(df["Confirmados"].sum())
@@ -153,8 +163,5 @@ def update_location(click_data, n_clicks):
 
 
 
-
-      
-      
 # Run Aplication
 app.run_server(debug=True, port=8051)
