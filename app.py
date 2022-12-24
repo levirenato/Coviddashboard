@@ -1,7 +1,6 @@
-import requests
 import pandas as pd
-from urllib.request import urlopen
 import dash
+import json
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import dash_bootstrap_components as dbc
@@ -9,10 +8,7 @@ import dash_bootstrap_components as dbc
 ####  Importações de bases de dados  ####
 
 #GeoJson (Fonte IBGE)
-response = requests.get(url='https://servicodados.ibge.gov.br/api/v3/malhas/estados/26?formato=application/vnd.geo+json&qualidade=maxima&intrarregiao=municipio')    
-if response.status_code == 200:
-    geojson = response.json()
-
+geojson = json.load(open('geoJson.json'))
 #Base De Dados (Com resumo por municipio)
 df = pd.read_csv('RESUMO.CSV',sep=';',index_col=False)
 
