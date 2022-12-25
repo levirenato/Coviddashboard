@@ -22,7 +22,7 @@ app.title = 'Morb-19'
 app.index_string = '''<!DOCTYPE html>
 <html>
 <head>
-<title>.</title>
+<title>Morb-19</title>
 <link rel="manifest" href="./assets/manifest.json" />
 {%metas%}
 {%favicon%}
@@ -135,11 +135,11 @@ def display_choropleth(categoria):
     else: tema = "#fcc2aa","#f14230","#67000d"
     
     fig = px.choropleth_mapbox(df, geojson=geojson, color=categoria,locations="codarea", featureidkey="properties.codarea",color_continuous_scale=tema,
-                               center={"lat":  -8.27519, "lon": -38.0376},mapbox_style="carto-positron", zoom=5,title="Mapa Taxa de {}".format(categoria),
+                               center={"lat":  -8.27519, "lon": -38.0376},mapbox_style="carto-positron", zoom=5,
                                  hover_data={"Municipio":True,"codarea":False, "Morbidade":True, "Confirmados":True,"Recuperados":True,"Obitos":True})
 
 
-    fig.update_layout(
+    fig.update_layout(plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)",
         margin={"r":0,"t":0,"l":0,"b":0},
         autosize=True,
         coloraxis_colorbar_x=-0.15
@@ -166,8 +166,7 @@ def top_gra(categoria):
                      y=top10['{}'.format(categoria)],
                      title='6 Cidades com maior {}'.format(categoria))
     
-    fig.update_layout(margin=dict(l=10, r=10, t=30, b=10),autosize=True, plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)",
-                      )
+    fig.update_layout(margin=dict(l=10, r=10, t=30, b=10),autosize=True, plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)")
     fig.update_traces(marker_color=tema)
     return fig
 
