@@ -17,6 +17,46 @@ app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX])
 
 server = app.server
 app.title = 'Morb-19'
+
+# TO MANIFEST
+app.index_string = '''<!DOCTYPE html>
+<html>
+<head>
+<title>My app title</title>
+<link rel="manifest" href="./assets/manifest.json" />
+{%metas%}
+{%favicon%}
+{%css%}
+</head>
+<script type="module">
+   import 'https://cdn.jsdelivr.net/npm/@pwabuilder/pwaupdate';
+   const el = document.createElement('pwa-update');
+   document.body.appendChild(el);
+</script>
+<body>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', ()=> {
+      navigator
+      .serviceWorker
+      .register('./assets/sw01.js')
+      .then(()=>console.log("Ready."))
+      .catch(()=>console.log("Err..."));
+    });
+  }
+</script>
+{%app_entry%}
+<footer>
+{%config%}
+{%scripts%}
+{%renderer%}
+</footer>
+</body>
+</html>
+'''
+
+
+# Layout
 app.layout = html.Div([
     #Head
     dbc.NavbarSimple([
