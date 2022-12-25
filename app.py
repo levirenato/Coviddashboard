@@ -68,9 +68,11 @@ app.layout = html.Div([
    
    #Graficos
     html.Div([ 
-        dcc.Graph(id="graph",style={"margin-top":"2%"}),
-        dcc.Graph(id="top",style={"margin-top":"2%"}, config={ 'responsive': True})
-    ])
+        dcc.Graph(id="graph",style={"margin-top":"2%"})
+    ]),
+    html.Div([
+        dcc.Graph(id="top", config={ 'responsive': True})
+    ],style={"margin-top":"5%"})
     
 ], style={"padding-right":"3%","padding-left":"3%"})
 
@@ -93,13 +95,14 @@ def display_choropleth(categoria):
     else: tema = "#fcc2aa","#f14230","#67000d"
     
     fig = px.choropleth_mapbox(df, geojson=geojson, color=categoria,locations="codarea", featureidkey="properties.codarea",color_continuous_scale=tema,
-                               center={"lat":  -8.27519, "lon": -38.0376},mapbox_style="carto-positron", zoom=6.6,title="Mapa Taxa de {}".format(categoria),
+                               center={"lat":  -8.27519, "lon": -38.0376},mapbox_style="carto-positron", zoom=5,title="Mapa Taxa de {}".format(categoria),
                                  hover_data={"Municipio":True,"codarea":False, "Morbidade":True, "Confirmados":True,"Recuperados":True,"Obitos":True})
 
 
     fig.update_layout(
         margin={"r":0,"t":0,"l":0,"b":0},
-        autosize=True,showlegend=False
+        autosize=True,
+        coloraxis_colorbar_x=-0.15
         )
     return fig
 
