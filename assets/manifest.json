@@ -9,12 +9,36 @@
   "short_name": "Morb-19",
   "start_url": "https://coviddashboard-production.up.railway.app/assets/",
   "theme_color": "#ffffff",
-  "categories": [],
-  "screenshots": [],
+  "categories": ["Educação","Saúde"],
+  "screenshots": [
+    {
+    "src": "android/screenshot_1.png",
+    "sizes": "828x1792"
+  },   {
+    "src": "android/screenshot_2.png",
+    "sizes": "828x1792"
+  },   {
+    "src": "android/screenshot_3.png",
+    "sizes": "828x1792"
+  },   {
+    "src": "android/screenshot_4.png",
+    "sizes": "828x1792"
+  },   {
+    "src": "android/screenshot_5.png",
+    "sizes": "828x1792"
+  },   {
+    "src": "android/screenshot_6.png",
+    "sizes": "828x1792"
+  },   {
+    "src": "android/screenshot_7.png",
+    "sizes": "828x1792"
+  }
+],
   "icons": [
       {
         "src": "android/android-launchericon-512-512.png",
-        "sizes": "512x512"
+        "sizes": "512x512",
+        "purpose": "maskable any"
       },
       {
         "src": "android/android-launchericon-192-192.png",
