@@ -13,7 +13,7 @@ geojson = json.load(open('geoJson.json'))
 df = pd.read_csv('RESUMO.csv',sep=';',index_col=False)
 
 # Div Dashboard
-app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX])
+app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX],routes_pathname_prefix='/Coviddashboard/')
 
 server = app.server
 app.title = 'Morb-19'
