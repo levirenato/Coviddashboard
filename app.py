@@ -16,7 +16,7 @@ df = pd.read_csv('RESUMO.csv',sep=';',index_col=False)
 app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX])
 
 server = app.server
-
+app.title = 'Morb-19'
 app.layout = html.Div([
     #Head
     dbc.NavbarSimple([
