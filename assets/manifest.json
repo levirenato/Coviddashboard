@@ -2,7 +2,7 @@
   "background_color": "#ffffff",
   "description": "Estatisticas de covid-19 no estado de Pernambuco.",
   "dir": "ltr",
-  "display": "fullscreen",
+  "display": "minimal-ui",
   "name": "Morb-19 Estatisticas de covid em PE",
   "orientation": "any",
   "scope": "https://coviddashboard-production.up.railway.app/assets/",
