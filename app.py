@@ -68,10 +68,10 @@ app.layout = html.Div([
    
    #Graficos
     html.Div([ 
-        dcc.Graph(id="graph",style={"margin-top":"2%"})
+        dcc.Graph(id="graph",style={"margin-top":"2%"},config= dict(displayModeBar = False))
     ]),
     html.Div([
-        dcc.Graph(id="top", config={ 'responsive': True})
+        dcc.Graph(id="top", config={ 'responsive': True,'displayModeBar': False})
     ],style={"margin-top":"5%"})
     
 ], style={"padding-right":"3%","padding-left":"3%"})
@@ -98,10 +98,7 @@ def display_choropleth(categoria):
                                center={"lat":  -8.27519, "lon": -38.0376},mapbox_style="carto-positron", zoom=5,title="Mapa Taxa de {}".format(categoria),
                                  hover_data={"Municipio":True,"codarea":False, "Morbidade":True, "Confirmados":True,"Recuperados":True,"Obitos":True})
 
-    fig.show(
-        config= dict(
-            displayModeBar = False)
-        )
+
     fig.update_layout(
         margin={"r":0,"t":0,"l":0,"b":0},
         autosize=True,
@@ -128,11 +125,6 @@ def top_gra(categoria):
     fig = px.bar(df, x=top10['Municipio'],text_auto=True,
                      y=top10['{}'.format(categoria)],
                      title='6 Cidades com maior {}'.format(categoria))
-    
-    fig.show(
-        config= dict(
-            displayModeBar = False)
-        )
     
     fig.update_layout(margin=dict(l=10, r=10, t=30, b=10),autosize=True, plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)",
                       )
