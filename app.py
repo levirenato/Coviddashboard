@@ -1,7 +1,7 @@
 import pandas as pd
 import dash
 import json
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, State
 import plotly.express as px
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
@@ -17,7 +17,7 @@ df['Morbidade'] = df['Morbidade'].astype(float)
 
 
 # Div Dashboard
-app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX])
+app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX, dbc.icons.BOOTSTRAP])
 
 server = app.server
 app.title = 'Morb-19'
@@ -112,13 +112,21 @@ app.layout = html.Div([
    
    #Graficos
     html.Div([ 
-        html.H5("Mapa por taxa Morbidade",id='titulo-1'),
+        html.Div([html.H5("Mapa por índice de morbidade",id='titulo-1'),
+        html.I(className="bi bi-question-circle-fill",id='info'),
+        dbc.Tooltip("Índice de Morbidade: Relação entre o número de indivíduos contaminados com a COVID-19 em uma região e o número total da população dessa região.",target="info")
+        ],style={"display":"flex"}),
         dcc.Graph(id="graph",style={"margin-top":"2%"},config= dict(displayModeBar = False))
     ]),
     html.Div([
-        html.H5("6 Maiores cidades por taxa Morbidade",id='titulo-2'),
+        html.Div([html.H5("6 Maiores cidades por índice de morbidade",id='titulo-2'),
+        html.I(className="bi bi-question-circle-fill",id='info2'),
+        dbc.Tooltip("Índice de Morbidade: Relação entre o número de indivíduos contaminados com a COVID-19 em uma região e o número total da população dessa região.",target="info2")
+        ],style={"display":"flex"}),
         dcc.Graph(id="top", config={ 'responsive': True,'displayModeBar': False})
-    ],style={"margin-top":"5%"})
+    ],style={"margin-top":"5%"}),
+
+    
     
 ], style={"padding-right":"3%","padding-left":"3%"})
 
@@ -212,24 +220,36 @@ def update_location(click_data, n_clicks):
 @app.callback(
 Output("titulo-1","children"),
 Output("titulo-2","children"),
-Input("offcanvas-placement-selector", "value"))
+Output("info",component_property='hidden'),
+Output("info2",component_property='hidden'),
+[Input("offcanvas-placement-selector", "value")])
 def muda_titulos(categoria):
     if categoria == 'Morbidade':
-        titulo_1 = '{}'.format('Mapa por taxa de Morbidade')
-        titulo_2 = '{}'.format('6 cidades com maior morbidade')
+        titulo_1 = '{}'.format('Mapa por índice de morbidade')
+        titulo_2 = '{}'.format('6 cidades com maior índice de morbidade')
+        show = False
+        show2 = False
     elif categoria == 'Confirmados':
         titulo_1 = '{}'.format('Mapa por número de casos confirmados')
         titulo_2 = '{}'.format('6 cidades com mais casos confirmados')
+        show = True
+        show2 = True
     elif categoria == 'Obitos':
         titulo_1 = '{}'.format('Mapa por número de óbitos')
         titulo_2 = '{}'.format('6 cidades com maior número de óbitos')
+        show = True
+        show2 = True
     else:
         titulo_1 = '{}'.format('Mapa por número de pessoas Recuperadas')
         titulo_2 = '{}'.format('6 cidades com maior número de Recuperados')
+        show = True
+        show2 = True
     
     return (
         titulo_1,
-        titulo_2
+        titulo_2,
+        show,
+        show2
     )
 # Run Aplication
 if __name__ == '__main__':
