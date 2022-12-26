@@ -4,13 +4,17 @@ import json
 from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import dash_bootstrap_components as dbc
-
+import plotly.graph_objects as go
 ####  Importações de bases de dados  ####
 
 #GeoJson (Fonte IBGE)
 geojson = json.load(open('geoJson.json'))
+
 #Base De Dados (Com resumo por municipio)
-df = pd.read_csv('RESUMO.csv',sep=';',index_col=False)
+df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=0&single=true&output=csv", sep=",")
+df['Morbidade'] = df['Morbidade'].str.replace(",",".")
+df['Morbidade'] = df['Morbidade'].astype(float)
+
 
 # Div Dashboard
 app = Dash(__name__,external_stylesheets=[dbc.themes.SIMPLEX])
@@ -67,9 +71,9 @@ app.layout = html.Div([
                 {"label": "Confirmados", "value": "Confirmados"},
                 {"label": "Recuperados", "value":"Recuperados"},
                 {"label": "Obitos", "value":"Obitos"}], value="Morbidade",
-        style={"align-self":"center"}
+        style={"align-self":"center","margin-left":"2%"}
         ),
-    dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%"},className="btn btn-dark")
+    dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%","height":"50%","align-self":"center"},className="btn btn-dark")
     ],brand='Estatisticas de Covid'),   
    
     # Cards
@@ -108,9 +112,11 @@ app.layout = html.Div([
    
    #Graficos
     html.Div([ 
+        html.H5("Mapa por taxa Morbidade",id='titulo-1'),
         dcc.Graph(id="graph",style={"margin-top":"2%"},config= dict(displayModeBar = False))
     ]),
     html.Div([
+        html.H5("6 Maiores cidades por taxa Morbidade",id='titulo-2'),
         dcc.Graph(id="top", config={ 'responsive': True,'displayModeBar': False})
     ],style={"margin-top":"5%"})
     
@@ -162,9 +168,10 @@ def top_gra(categoria):
     
     #top 10
     top10 = df.nlargest(n=6, columns=['{}'.format(categoria)])
-    fig = px.bar(df, x=top10['Municipio'],text_auto=True,
-                     y=top10['{}'.format(categoria)],
-                     title='6 Cidades com maior {}'.format(categoria))
+    
+    fig = go.Figure([go.Bar(x=top10['Municipio'], y=top10['{}'.format(categoria)], text=top10['{}'.format(categoria)],textposition='auto'
+                            
+                            )])
     
     fig.update_layout(margin=dict(l=10, r=10, t=30, b=10),autosize=True, plot_bgcolor="rgba(0, 0, 0, 0)",paper_bgcolor="rgba(0, 0, 0, 0)")
     fig.update_traces(marker_color=tema)
@@ -201,8 +208,29 @@ def update_location(click_data, n_clicks):
 
     return (loca,loca2,loca3,casos_recuperados,casos_confirmados,obitos)
 
-
-
+# Mudar titulos
+@app.callback(
+Output("titulo-1","children"),
+Output("titulo-2","children"),
+Input("offcanvas-placement-selector", "value"))
+def muda_titulos(categoria):
+    if categoria == 'Morbidade':
+        titulo_1 = '{}'.format('Mapa por taxa de Morbidade')
+        titulo_2 = '{}'.format('6 cidades com maior morbidade')
+    elif categoria == 'Confirmados':
+        titulo_1 = '{}'.format('Mapa por número de casos confirmados')
+        titulo_2 = '{}'.format('6 cidades com mais casos confirmados')
+    elif categoria == 'Obitos':
+        titulo_1 = '{}'.format('Mapa por número de óbitos')
+        titulo_2 = '{}'.format('6 cidades com maior número de óbitos')
+    else:
+        titulo_1 = '{}'.format('Mapa por número de pessoas Recuperadas')
+        titulo_2 = '{}'.format('6 cidades com maior número de Recuperados')
+    
+    return (
+        titulo_1,
+        titulo_2
+    )
 # Run Aplication
 if __name__ == '__main__':
     app.run_server(debug=True)
