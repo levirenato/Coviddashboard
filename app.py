@@ -10,8 +10,30 @@ import plotly.graph_objects as go
 #GeoJson (Fonte IBGE)
 geojson = json.load(open('geoJson.json'))
 
+
+# link da planilha
+link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=0&single=true&output=csv"
+
+
+lista_meses = {
+    "Janeiro":"",
+    "Fevereiro":"",
+    "Março":"",
+    "Abril":"",
+    "Maio":"",
+    "Junho":"",
+    "Julho":"",
+    "Agosto":"",
+    "Setembro":"",
+    "Outubro":"",
+    "Novembro":"",
+    "Dezembro":"",
+}
+
+
 #Base De Dados (Com resumo por municipio)
-df = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=0&single=true&output=csv", sep=",")
+df = pd.read_csv(link, sep=",")
+#converte a virgula em ponto para fazer os cálculos
 df['Morbidade'] = df['Morbidade'].str.replace(",",".")
 df['Morbidade'] = df['Morbidade'].astype(float)
 
@@ -62,7 +84,7 @@ app.index_string = '''<!DOCTYPE html>
 
 # Layout
 app.layout = html.Div([
-    #Head
+    #HeadBar
     dbc.NavbarSimple([
     dbc.RadioItems(
         id='offcanvas-placement-selector',
@@ -73,7 +95,30 @@ app.layout = html.Div([
                 {"label": "Obitos", "value":"Obitos"}], value="Morbidade",
         style={"align-self":"center","margin-left":"2%"}
         ),
-    dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%","height":"50%","align-self":"center"},className="btn btn-dark")
+    
+    #Filtros
+    html.Div([
+    dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%","height":"50%","align-self":"center"},className="btn btn-dark"),
+    
+    dbc.Button([html.I(className="bi bi-calendar-date")], id="open", n_clicks=0,className="btn btn-dark", size='sm'),
+        dbc.Modal(
+            [
+                dbc.ModalHeader(dbc.ModalTitle("Data")),
+                dbc.ModalBody(
+                    dbc.Button(
+                        "Close", id="close", className="ms-auto", n_clicks=0
+                    )
+                    ),
+                dbc.ModalFooter(
+                    #dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%","height":"50%","align-self":"center"},className="btn btn-dark")
+                ),
+            ],
+            id="filtro-data",
+            is_open=False,
+        )],style={"margin-left":"2%","height":"50%","align-self":"center","display":"flex"})
+    
+    
+    
     ],brand='Estatisticas de Covid'),   
    
     # Cards
@@ -123,7 +168,7 @@ app.layout = html.Div([
         html.I(className="bi bi-question-circle-fill",id='info2'),
         dbc.Tooltip("Índice de Morbidade: Relação entre o número de indivíduos contaminados com a COVID-19 em uma região e o número total da população dessa região.",target="info2")
         ],style={"display":"flex"}),
-        dcc.Graph(id="top", config={ 'responsive': True,'displayModeBar': False})
+        dcc.Graph(id="top", config={ 'responsive': True,'displayModeBar': False,"staticPlot":True})
     ],style={"margin-top":"5%"}),
 
     
@@ -160,7 +205,7 @@ def display_choropleth(categoria):
         )
     return fig
 
-# graph Bar top 10
+# graph Bar top 7
 @app.callback(
 Output("top","figure"),
 Input("offcanvas-placement-selector", "value"))
@@ -174,10 +219,10 @@ def top_gra(categoria):
         tema = "#123f5a"
     else: tema = "#67000d"
     
-    #top 10
-    top10 = df.nlargest(n=6, columns=['{}'.format(categoria)])
+    #top 7
+    top7 = df.nlargest(n=7, columns=['{}'.format(categoria)])
     
-    fig = go.Figure([go.Bar(x=top10['Municipio'], y=top10['{}'.format(categoria)], text=top10['{}'.format(categoria)],textposition='auto'
+    fig = go.Figure([go.Bar(x=top7['Municipio'], y=top7['{}'.format(categoria)], text=top7['{}'.format(categoria)],textposition='auto'
                             
                             )])
     
@@ -251,6 +296,19 @@ def muda_titulos(categoria):
         show,
         show2
     )
+
+#teste
+@app.callback(
+    Output("filtro-data", "is_open"),
+    [Input("open", "n_clicks"), Input("close", "n_clicks")],
+    [State("filtro-data", "is_open")],
+)
+def toggle_modal(n1, n2, is_open):
+    if n1 or n2:
+        return not is_open
+    return is_open
+
+
 # Run Aplication
 if __name__ == '__main__':
     app.run_server(debug=True)
