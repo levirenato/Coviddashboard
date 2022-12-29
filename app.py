@@ -15,8 +15,11 @@ geojson = json.load(open('geoJson.json'))
 #   "O ano : link ,"
 #
 lista_anos = {
+    "2020":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=45608524&single=true&output=csv",
     "2021":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=0&single=true&output=csv",
-    "2022":"",
+    "2022":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=2062634004&single=true&output=csv",
+    "2023":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=1973077620&single=true&output=csv",
+    "2024":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=752853256&single=true&output=csv"
 }
 
 
@@ -101,8 +104,12 @@ app.layout = html.Div([
             [
                 dbc.ModalHeader(dbc.ModalTitle("Período")),
                 dbc.ModalBody(
-                    [dcc.Dropdown([{'label': '2020', 'value': "2020","disabled":True},{'label': '2021', 'value': "2021"},
-                                {'label': '2022', 'value': "2022","disabled":True}],"2021",clearable=False,id="ano-selecionado"),
+                    [dcc.Dropdown([{'label': '2020', 'value': "2020","disabled":True},
+                                   {'label': '2021', 'value': "2021"},
+                                   {'label': '2022', 'value': "2022","disabled":True},
+                                   {'label': '2023', 'value': "2023","disabled":True},
+                                   {'label': '2024', 'value': "2024","disabled":True},              
+                                  ],"2021",clearable=False,id="ano-selecionado"),
 
                     dcc.Dropdown([i for i in base_ano["Mes"].drop_duplicates()],base_ano["Mes"].drop_duplicates(),clearable=False,id="mes-selecionado",multi=True) 
                     ]),
