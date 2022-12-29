@@ -302,7 +302,7 @@ Output("info2",component_property='hidden'),
 [Input("offcanvas-placement-selector", "value")])
 def muda_titulos(categoria):
     if categoria == 'Morbidade':
-        titulo_1 = '{}'.format('Mapa por índice de morbidade')
+        titulo_1 = '{}'.format('Mapa por índice de morbidade/COVID-19')
         titulo_2 = '{}'.format('7 cidades com maior índice de morbidade/COVID-19')
         show = False
         show2 = False
