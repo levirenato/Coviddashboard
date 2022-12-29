@@ -89,7 +89,7 @@ app.layout = html.Div([
                 {"label": "Confirmados", "value": "Confirmados"},
                 {"label": "Recuperados", "value":"Recuperados"},
                 {"label": "Óbitos", "value":"Obitos"}], value="Morbidade",
-            style={"align-self":"center","margin-left":"2%"}
+            style={"align-self":"center","margin-left":"2%","font-size":"16px"}
         ),
     
     #botoes
