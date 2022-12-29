@@ -85,10 +85,10 @@ app.layout = html.Div([
     dbc.RadioItems(
         id='offcanvas-placement-selector',
         options = [
-                {"label": "Morbidade", "value": "Morbidade"},
+                {"label": "Morbidade/COVID-19", "value": "Morbidade"},
                 {"label": "Confirmados", "value": "Confirmados"},
                 {"label": "Recuperados", "value":"Recuperados"},
-                {"label": "Obitos", "value":"Obitos"}], value="Morbidade",
+                {"label": "Óbitos", "value":"Obitos"}], value="Morbidade",
             style={"align-self":"center","margin-left":"2%"}
         ),
     
@@ -99,7 +99,7 @@ app.layout = html.Div([
     dbc.Button([html.I(className="bi bi-calendar-date")], id="open", n_clicks=0, color="success", size='sm', style={"margin-left":"2%","height":"50%","align-self":"center"}),
         dbc.Modal(
             [
-                dbc.ModalHeader(dbc.ModalTitle("Periodo")),
+                dbc.ModalHeader(dbc.ModalTitle("Período")),
                 dbc.ModalBody(
                     [dcc.Dropdown([{'label': '2020', 'value': "2020","disabled":True},{'label': '2021', 'value': "2021"},
                                 {'label': '2022', 'value': "2022","disabled":True}],"2021",clearable=False,id="ano-selecionado"),
@@ -303,22 +303,22 @@ Output("info2",component_property='hidden'),
 def muda_titulos(categoria):
     if categoria == 'Morbidade':
         titulo_1 = '{}'.format('Mapa por índice de morbidade')
-        titulo_2 = '{}'.format('6 cidades com maior índice de morbidade')
+        titulo_2 = '{}'.format('7 cidades com maior índice de morbidade/COVID-19')
         show = False
         show2 = False
     elif categoria == 'Confirmados':
         titulo_1 = '{}'.format('Mapa por número de casos confirmados')
-        titulo_2 = '{}'.format('6 cidades com mais casos confirmados')
+        titulo_2 = '{}'.format('7 cidades com mais casos confirmados')
         show = True
         show2 = True
     elif categoria == 'Obitos':
         titulo_1 = '{}'.format('Mapa por número de óbitos')
-        titulo_2 = '{}'.format('6 cidades com maior número de óbitos')
+        titulo_2 = '{}'.format('7 cidades com maior número de óbitos')
         show = True
         show2 = True
     else:
         titulo_1 = '{}'.format('Mapa por número de pessoas Recuperadas')
-        titulo_2 = '{}'.format('6 cidades com maior número de Recuperados')
+        titulo_2 = '{}'.format('7 cidades com maior número de Recuperados')
         show = True
         show2 = True
     
