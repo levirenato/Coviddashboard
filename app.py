@@ -11,24 +11,8 @@ import plotly.graph_objects as go
 geojson = json.load(open('geoJson.json'))
 
 
-# link da planilha(Com resumo por municipio) #Coloque aqui o link da nova planilha seguindo o modelo:
-#   "O ano : link ,"
-#
-lista_anos = {
-    "2020":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=45608524&single=true&output=csv",
-    "2021":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=0&single=true&output=csv",
-    "2022":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=2062634004&single=true&output=csv",
-    "2023":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=1973077620&single=true&output=csv",
-    "2024":"https://docs.google.com/spreadsheets/d/e/2PACX-1vSVIgIkfBX2wktEr3WWdEiQRWn4ktnK3n6pHbYqWoRiOl1B_QSKV9cMnZMNoSxQqlfOe_LBy82FW5gD/pub?gid=752853256&single=true&output=csv"
-}
-
-
 #Base De Dados (Com resumo por municipio)
-base_ano = pd.read_csv(lista_anos.get("2021"), sep=",")
-#converte a virgula em ponto para fazer os cálculos
-base_ano['Morbidade'] = base_ano['Morbidade'].str.replace(",",".")
-base_ano['Morbidade'] = base_ano['Morbidade'].astype(float)
-df = base_ano.query("Mes == 'Abril'")
+df = pd.read_csv("Resumo.csv", sep=";")
 
 
 # Div Dashboard
@@ -97,29 +81,8 @@ app.layout = html.Div([
     
     #botoes
     html.Div([
-    dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%","height":"50%","align-self":"center"},className="btn btn-dark"),
-    
-    dbc.Button([html.I(className="bi bi-calendar-date")], id="open", n_clicks=0, color="success", size='sm', style={"margin-left":"2%","height":"50%","align-self":"center"}),
-        dbc.Modal(
-            [
-                dbc.ModalHeader(dbc.ModalTitle("Período")),
-                dbc.ModalBody(
-                    [dcc.Dropdown([{'label': '2020', 'value': "2020","disabled":True},
-                                   {'label': '2021', 'value': "2021"},
-                                   {'label': '2022', 'value': "2022","disabled":True},
-                                   {'label': '2023', 'value': "2023","disabled":True},
-                                   {'label': '2024', 'value': "2024","disabled":True},              
-                                  ],"2021",clearable=False,id="ano-selecionado"),
-
-                    dcc.Dropdown([i for i in base_ano["Mes"].drop_duplicates()],base_ano["Mes"].drop_duplicates(),clearable=False,id="mes-selecionado",multi=True) 
-                    ]),
-                dbc.ModalFooter(
-                    dbc.Button("Fechar", id="close", className="ms-auto", n_clicks=0)
-                ),
-            ],
-            id="filtro-data",
-            is_open=False,
-        )],style={"margin-left":"2%","height":"50%","align-self":"center","display":"flex"})
+    dbc.Button("Limpar", color="primary", id="location-button", size='sm', style={"margin-left":"2%","height":"50%","align-self":"center"},className="btn btn-dark"),],
+    style={"margin-left":"2%","height":"50%","align-self":"center","display":"flex"})
        
     
     ],brand="MorbCOVID-19"),   
@@ -180,35 +143,14 @@ app.layout = html.Div([
 
 
 
-#Configuração
-@app.callback(
-    Output("filtro-data", "is_open"),
-    [Input("open", "n_clicks"), 
-    Input("close", "n_clicks")],
-    [State("filtro-data", "is_open")],
-)
-def toggle_modal(n1, n2, is_open):
-    global  base_ano
-    global df   
-    if n1 or n2:
-        return not is_open   
-    return is_open
 
 
 # MAP function with the choice filter
 @app.callback(
     Output("graph", "figure"),
-    [Input("offcanvas-placement-selector", "value"),Input('mes-selecionado','value'),Input('ano-selecionado','value')])
-def display_choropleth(categoria,mes,ano): 
-    #Muda a base de dados de acordo com o filtro
-
-    base_ano = pd.read_csv(lista_anos.get("{}".format(ano)), sep=",")
-    #converte a virgula em ponto para fazer os cálculos
-    base_ano['Morbidade'] = base_ano['Morbidade'].str.replace(",",".")
-    base_ano['Morbidade'] = base_ano['Morbidade'].astype(float)
-    df = base_ano.query("Mes == {}".format(mes))
-
-
+    [Input("offcanvas-placement-selector", "value")])
+def display_choropleth(categoria): 
+    df = pd.read_csv("Resumo.csv", sep=";")
 
     # condição para definir o tema
     if categoria == 'Morbidade':
@@ -234,16 +176,10 @@ def display_choropleth(categoria,mes,ano):
 # graph Bar top 7
 @app.callback(
 Output("top","figure"),
-[Input("offcanvas-placement-selector", "value"),Input('mes-selecionado','value'),Input('ano-selecionado','value')])
-def top_gra(categoria,mes,ano):
-    #Muda a base de dados de acordo com o filtro
+[Input("offcanvas-placement-selector", "value")])
+def top_gra(categoria):
 
-    base_ano = pd.read_csv(lista_anos.get("{}".format(ano)), sep=",")
-    #converte a virgula em ponto para fazer os cálculos
-    base_ano['Morbidade'] = base_ano['Morbidade'].str.replace(",",".")
-    base_ano['Morbidade'] = base_ano['Morbidade'].astype(float)
-    df = base_ano.query("Mes == {}".format(mes))
-
+    base_ano = pd.read_csv("Resumo.csv", sep=";")
 
      # condição para definir o tema
     if categoria == 'Morbidade':
@@ -271,15 +207,12 @@ def top_gra(categoria,mes,ano):
     Output("casos-recuperados", "children"),
     Output("casos-confirmados", "children"),
     Output("obitos", "children"),
-    [Input("graph", "clickData"), Input("location-button", "n_clicks"),Input('mes-selecionado','value'),Input('ano-selecionado','value')]
+    [Input("graph", "clickData"), Input("location-button", "n_clicks")]
 )
-def update_location(click_data, n_clicks,mes,ano):
+def update_location(click_data, n_clicks):
     #Muda a base de dados de acordo com o filtro
-    base_ano = pd.read_csv(lista_anos.get("{}".format(ano)), sep=",")
-    #converte a virgula em ponto para fazer os cálculos
-    base_ano['Morbidade'] = base_ano['Morbidade'].str.replace(",",".")
-    base_ano['Morbidade'] = base_ano['Morbidade'].astype(float)
-    df = base_ano.query("Mes == {}".format(mes))
+    df = pd.read_csv("Resumo.csv", sep=";")
+
     df.reset_index
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if click_data is not None and changed_id != "location-button.n_clicks":
