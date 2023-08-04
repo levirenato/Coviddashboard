@@ -72,11 +72,11 @@ app.layout = html.Div([
     dbc.RadioItems(
         id='offcanvas-placement-selector',
         options = [
-                {"label": "Morbidade/COVID-19", "value": "Morbidade"},
+                {"label": "Morbidade", "value": "Morbidade"},
                 {"label": "Confirmados", "value": "Confirmados"},
                 {"label": "Recuperados", "value":"Recuperados"},
                 {"label": "Óbitos", "value":"Obitos"}], value="Morbidade",
-            style={"align-self":"center","margin-left":"2%","font-size":"16px"}
+            style={"justify-items":"center","margin-left":"2%","font-size":"16px","display":"flex","gap":"1rem"}
         ),
     
     #botoes
